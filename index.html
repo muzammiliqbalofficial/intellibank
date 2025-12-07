@@ -59,8 +59,21 @@
 
         /* --- SIDEBAR --- */
         .sidebar { width: 260px; min-width: 260px; background-color: var(--primary-blue); color: var(--white); display: flex; flex-direction: column; }
-        .logo-container { padding: 20px; background-color: white; text-align: center; border-bottom: 3px solid var(--accent-gold); }
-        .logo-container img { max-width: 180px; height: auto; }
+        /* --- LOGO SIZE FIX --- */
+        .logo-container { 
+            padding: 5px; /* Padding bilkul kam kar di taake jagah milay */
+            background-color: white; 
+            text-align: center; 
+            border-bottom: 3px solid var(--accent-gold); 
+        }
+        
+        .logo-container img { 
+            width: 100%; /* Logo ab poori width use karega */
+            height: auto; 
+            display: block;
+            margin: 0 auto;
+            padding: 5px; /* Thora sa internal spacing */
+        }
         .nav-links { list-style: none; padding-top: 20px; flex-grow: 1; }
         .nav-links a { display: flex; align-items: center; padding: 15px 25px; color: rgba(255,255,255,0.8); text-decoration: none; transition: 0.3s; font-size: 14px; border-left: 4px solid transparent; }
         .nav-links a:hover, .nav-links a.active { background-color: rgba(255,255,255,0.1); color: var(--white); border-left-color: var(--accent-gold); }
