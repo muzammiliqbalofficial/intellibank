@@ -1,0 +1,29 @@
+Bilkul sahi pakra aap ne! **100% Right.**
+
+Isay technical zuban mein **"Intranet Application"** ya **"Internal Tool"** kehte hain.
+
+Iska farq presentation mein samjhane ke liye ye points use karein:
+
+1. **Public Website (.com) Nahi Hai:**
+Yeh Facebook ya Daraz jaisi website nahi hai ke koi bhi banda `www.intellibank.com` likh kar khol le. Yeh Aam Public (Customers) ke liye nahi hai.
+2. **Private Network (Bank Servers):**
+SRS mein likha hai ke ye system **"On-Premises"** (Bank ki building ke andar walay servers) ya **"Private Cloud"** par chalega.
+
+
+* Sirf **Bank Managers** aur **Analysts** isay access kar sakenge.
+
+
+* Unhein access karne ke liye **Secure Login** aur **Bank ka VPN** chahiye hoga.
+
+
+
+
+3. **Analogy (Misaal) Presentation ke liye:**
+"Sir, jaise Restaurant mein **'Dining Area'** sab ke liye hota hai lekin **'Kitchen'** mein sirf staff ja sakta hai.
+* Bank ki **Mobile App** 'Dining Area' hai (Customers ke liye).
+* Humara **IntelliBank** 'Kitchen' hai (Sirf Bank Managers ke liye taake wo business control kar sakein)."
+
+
+
+**Conclusion:**
+Yeh internet par publicly open nahi hogi, balki Bank ke apne secure internal network par chalegi taake data leak na ho.

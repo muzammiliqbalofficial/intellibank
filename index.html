@@ -8,24 +8,30 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary-blue: #002b5e;
+            /* Light & Professional Theme */
+            --primary-blue: #002b5e; 
+            --primary-light: #e6f0fa; 
             --accent-teal: #008080;
             --accent-gold: #D4AF37;
-            --light-bg: #f4f6f9;
+            --bg-color: #f0f2f5; 
+            --sidebar-bg: #ffffff; 
+            --text-main: #333333;
+            --text-muted: #666666;
             --white: #ffffff;
             --danger: #dc3545;
             --success: #28a745;
+            --border-color: #e0e0e0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
-        body { background-color: var(--light-bg); height: 100vh; overflow: hidden; }
+        body { background-color: var(--bg-color); height: 100vh; overflow: hidden; color: var(--text-main); }
 
         /* --- LOGIN PAGE STYLES --- */
         #login-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, var(--primary-blue) 0%, #001a3d 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -35,75 +41,166 @@
         .login-box {
             background: white;
             padding: 40px;
-            border-radius: 10px;
-            width: 400px;
+            border-radius: 12px;
+            width: 450px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border-top: 5px solid var(--accent-gold);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--primary-blue);
         }
 
-        .login-logo img { width: 150px; margin-bottom: 20px; }
+        /* --- LOGIN LOGO FIX (ZOOM EFFECT) --- */
+        .login-logo {
+            margin-bottom: 30px;
+            overflow: hidden; /* Safety if it gets too big */
+        }
+        .login-logo img { 
+            width: 100%; 
+            max-width: 320px; /* Base size */
+            height: auto;
+            /* YEH HAI TRICK: Image ko 1.3x Zoom kar diya */
+            transform: scale(1.4); 
+            display: block;
+            margin: 0 auto;
+        }
 
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--primary-blue); margin-bottom: 8px; }
-        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; }
-        .btn-login { width: 100%; padding: 12px; background: var(--primary-blue); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        .btn-login:hover { background: var(--accent-teal); }
+        .form-control { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 15px; background: #f9f9f9; transition: 0.3s; }
+        .form-control:focus { border-color: var(--primary-blue); outline: none; background: white; }
         
-        /* --- APP CONTAINER (Hidden Initially) --- */
+        .btn-login { width: 100%; padding: 12px; background: var(--primary-blue); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-login:hover { background: #00408a; transform: translateY(-1px); }
+        
+        /* --- APP CONTAINER --- */
         #app-container {
-            display: none; /* Hidden until login */
+            display: none; 
             height: 100%;
             display: flex;
         }
 
         /* --- SIDEBAR --- */
-        .sidebar { width: 260px; min-width: 260px; background-color: var(--primary-blue); color: var(--white); display: flex; flex-direction: column; }
-        /* --- LOGO SIZE FIX --- */
+        .sidebar { 
+            width: 270px; 
+            min-width: 270px; 
+            background-color: var(--sidebar-bg); 
+            color: var(--text-main); 
+            display: flex; 
+            flex-direction: column; 
+            border-right: 1px solid var(--border-color);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.02);
+        }
+
+        /* --- SIDEBAR LOGO FIX (NO PADDING + ZOOM) --- */
         .logo-container { 
-            padding: 5px; /* Padding bilkul kam kar di taake jagah milay */
-            background-color: white; 
+            padding: 20px 0; /* Side padding hata di */
             text-align: center; 
-            border-bottom: 3px solid var(--accent-gold); 
+            border-bottom: 1px solid var(--border-color); 
+            background: #fff;
+            overflow: hidden;
         }
         
         .logo-container img { 
-            width: 100%; /* Logo ab poori width use karega */
+            width: 100%; /* Force full width */
             height: auto; 
             display: block;
+            /* Sidebar logo ko bhi thora zoom kiya taake whitespace hate */
+            transform: scale(1.25); 
             margin: 0 auto;
-            padding: 5px; /* Thora sa internal spacing */
         }
+
         .nav-links { list-style: none; padding-top: 20px; flex-grow: 1; }
-        .nav-links a { display: flex; align-items: center; padding: 15px 25px; color: rgba(255,255,255,0.8); text-decoration: none; transition: 0.3s; font-size: 14px; border-left: 4px solid transparent; }
-        .nav-links a:hover, .nav-links a.active { background-color: rgba(255,255,255,0.1); color: var(--white); border-left-color: var(--accent-gold); }
-        .nav-links i { width: 25px; margin-right: 10px; color: var(--accent-teal); }
-        .user-profile { padding: 20px; background-color: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px; }
-        .user-avatar { width: 40px; height: 40px; background-color: var(--accent-teal); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        
+        .nav-links a { 
+            display: flex; 
+            align-items: center; 
+            padding: 15px 25px; 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            transition: 0.3s; 
+            font-size: 15px; 
+            border-left: 5px solid transparent; 
+            font-weight: 500;
+        }
+
+        .nav-links a:hover, .nav-links a.active { 
+            background-color: var(--primary-light); 
+            color: var(--primary-blue); 
+            border-left-color: var(--primary-blue); 
+        }
+        
+        .nav-links i { width: 30px; margin-right: 10px; color: var(--accent-teal); font-size: 18px; }
+
+        .user-profile { 
+            padding: 20px; 
+            background-color: #fafafa; 
+            border-top: 1px solid var(--border-color);
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .user-avatar { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; }
 
         /* --- MAIN CONTENT --- */
-        .main-content { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; background: var(--light-bg); }
-        .top-bar { background-color: var(--white); padding: 15px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .main-content { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; background: var(--bg-color); }
+        
+        .top-bar { 
+            background-color: var(--white); 
+            padding: 15px 30px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid var(--border-color);
+        }
+        
         .content-area { padding: 30px; }
 
         /* --- DASHBOARD CARDS --- */
         .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-        .kpi-card { background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-top: 3px solid var(--accent-teal); }
-        .kpi-value { font-size: 24px; font-weight: bold; color: var(--primary-blue); margin: 5px 0; }
-        .kpi-trend { font-size: 12px; }
+        .kpi-card { 
+            background: var(--white); 
+            padding: 25px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+            border-top: 4px solid var(--primary-blue); 
+            transition: transform 0.3s;
+        }
+        .kpi-card:hover { transform: translateY(-3px); }
+
+        .kpi-value { font-size: 28px; font-weight: 700; color: var(--primary-blue); margin: 8px 0; }
+        .kpi-trend { font-size: 13px; font-weight: 500; }
         .trend-up { color: var(--success); } .trend-down { color: var(--danger); }
 
         /* --- CHARTS & PANELS --- */
         .chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px; }
-        .panel { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-        .panel h3 { color: var(--primary-blue); margin-bottom: 15px; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        .panel { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+            display: flex; 
+            flex-direction: column; 
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        
+        .panel h3 { 
+            color: var(--primary-blue); 
+            margin-bottom: 20px; 
+            font-size: 18px; 
+            border-bottom: 1px solid #f0f0f0; 
+            padding-bottom: 15px; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         
         .chart-wrapper { position: relative; height: 300px; width: 100%; }
 
         .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        .data-table th { background: #f8f9fa; text-align: left; padding: 12px; color: var(--primary-blue); }
-        .data-table td { padding: 12px; border-bottom: 1px solid #eee; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .data-table th { background: #f8f9fa; text-align: left; padding: 15px; color: var(--primary-blue); font-weight: 600; border-bottom: 2px solid #eee; }
+        .data-table td { padding: 15px; border-bottom: 1px solid #eee; color: #444; }
+        .badge { padding: 5px 10px; border-radius: 50px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge-danger { background: #ffebee; color: #c62828; }
         .badge-success { background: #e8f5e9; color: #2e7d32; }
         .badge-warning { background: #fff3e0; color: #ef6c00; }
@@ -114,10 +211,12 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- QUERY INTERFACE --- */
-        .query-box { text-align: center; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .query-input-wrapper { display: flex; max-width: 700px; margin: 20px auto; }
-        .query-input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 4px 0 0 4px; font-size: 16px; }
-        .query-btn { padding: 12px 30px; background: var(--primary-blue); color: white; border: none; border-radius: 0 4px 4px 0; cursor: pointer; }
+        .query-box { text-align: center; padding: 40px; background: white; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .query-input-wrapper { display: flex; max-width: 700px; margin: 25px auto; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 50px; overflow: hidden; }
+        .query-input { flex: 1; padding: 15px 25px; border: none; font-size: 16px; background: #f9f9f9; }
+        .query-input:focus { outline: none; background: #fff; }
+        .query-btn { padding: 15px 35px; background: var(--primary-blue); color: white; border: none; cursor: pointer; font-weight: bold; }
+        .query-btn:hover { background: #00408a; }
     </style>
 </head>
 <body>
@@ -127,7 +226,8 @@
             <div class="login-logo">
                 <img src="intellibank_logo.png" alt="IntelliBank">
             </div>
-            <h2 style="color: var(--primary-blue); margin-bottom: 20px;">Secure Login</h2>
+            <h2 style="color: var(--primary-blue); margin-bottom: 20px;">Welcome Back</h2>
+            <p style="color: #666; margin-bottom: 25px; font-size: 14px;">Please enter your credentials to access the analytics portal.</p>
             <div class="form-group">
                 <label>Username / ID</label>
                 <input type="text" class="form-control" placeholder="Enter your ID" value="ABC">
@@ -136,14 +236,15 @@
                 <label>Password</label>
                 <input type="password" class="form-control" placeholder="••••••••" value="password123">
             </div>
-            <button class="btn-login" onclick="performLogin()">Login to Dashboard</button>
-            <div style="margin-top: 15px; font-size: 12px; color: #666;">
-                <i class="fas fa-lock"></i> Secured by End-to-End Encryption
+            <button class="btn-login" onclick="performLogin()">Login</button>
+            <div style="margin-top: 20px; font-size: 12px; color: #999;">
+                <i class="fas fa-shield-alt"></i> 256-bit SSL Encryption
             </div>
         </div>
     </div>
 
-    <div id="app-container" style="display: none;"> <div class="sidebar">
+    <div id="app-container" style="display: none;">
+        <div class="sidebar">
             <div class="logo-container">
                 <img src="intellibank_logo.png" alt="IntelliBank">
             </div>
@@ -157,21 +258,21 @@
             <div class="user-profile">
                 <div class="user-avatar">A</div>
                 <div>
-                    <div style="font-size: 14px; font-weight: 600;">ABC</div>
-                    <div style="font-size: 12px; opacity: 0.8;">Bank Manager</div>
+                    <div style="font-size: 14px; font-weight: 600; color: var(--primary-blue);">ABC</div>
+                    <div style="font-size: 12px; color: #888;">Bank Manager</div>
                 </div>
             </div>
         </div>
 
         <div class="main-content">
             <div class="top-bar">
-                <h2 id="page-title">Executive Overview</h2>
+                <h2 id="page-title" style="color: var(--primary-blue); font-size: 20px;">Executive Overview</h2>
                 <div style="display: flex; gap: 10px;">
-                    <button style="padding: 8px 15px; background: white; color: var(--primary-blue); border: 1px solid #ddd; border-radius: 4px; cursor: pointer;" onclick="logout()">
+                    <button style="padding: 8px 15px; background: white; color: var(--danger); border: 1px solid #ffcdd2; border-radius: 4px; cursor: pointer; font-weight: 500;" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
                     <button style="padding: 8px 15px; background: var(--primary-blue); color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        <i class="fas fa-download"></i> Export Report
+                        <i class="fas fa-download"></i> Export
                     </button>
                 </div>
             </div>
@@ -180,23 +281,23 @@
                 
                 <div id="dashboard" class="section active">
                     <div class="kpi-grid">
-                        <div class="kpi-card">
-                            <div style="font-size: 12px; text-transform: uppercase; color: #666;">Total Deposits</div>
+                        <div class="kpi-card" style="border-top-color: var(--primary-blue);">
+                            <div style="font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px;">Total Deposits</div>
                             <div class="kpi-value">PKR 4.2B</div>
                             <div class="kpi-trend trend-up"><i class="fas fa-arrow-up"></i> 12% vs last month</div>
                         </div>
-                        <div class="kpi-card">
-                            <div style="font-size: 12px; text-transform: uppercase; color: #666;">Active Customers</div>
+                        <div class="kpi-card" style="border-top-color: var(--accent-teal);">
+                            <div style="font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px;">Active Customers</div>
                             <div class="kpi-value">124,500</div>
                             <div class="kpi-trend trend-up"><i class="fas fa-arrow-up"></i> 3% Growth</div>
                         </div>
-                        <div class="kpi-card">
-                            <div style="font-size: 12px; text-transform: uppercase; color: #666;">Fraud Attempts</div>
+                        <div class="kpi-card" style="border-top-color: var(--danger);">
+                            <div style="font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px;">Fraud Attempts</div>
                             <div class="kpi-value" style="color: var(--danger);">18</div>
                             <div class="kpi-trend trend-down"><i class="fas fa-exclamation-circle"></i> Requires Review</div>
                         </div>
-                        <div class="kpi-card">
-                            <div style="font-size: 12px; text-transform: uppercase; color: #666;">Churn Risk</div>
+                        <div class="kpi-card" style="border-top-color: var(--accent-gold);">
+                            <div style="font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px;">Churn Risk</div>
                             <div class="kpi-value">4.5%</div>
                             <div class="kpi-trend trend-up" style="color: var(--success);"><i class="fas fa-check"></i> 0.5% Decrease</div>
                         </div>
@@ -218,7 +319,7 @@
                     </div>
 
                     <div class="panel">
-                        <h3>Recent High-Risk Transactions</h3>
+                        <h3><i class="fas fa-list-ul"></i> Recent High-Risk Transactions</h3>
                         <table class="data-table">
                             <thead>
                                 <tr>
@@ -263,13 +364,13 @@
                 <div id="ai-query" class="section">
                     <div class="query-box">
                         <i class="fas fa-robot" style="font-size: 40px; color: var(--accent-teal); margin-bottom: 20px;"></i>
-                        <h2>AI Data Analyst</h2>
-                        <p style="color: #666; margin-bottom: 20px;">Ask questions in English or Urdu. (e.g., "Show me fraud trends for last month")</p>
+                        <h2 style="color: var(--primary-blue);">AI Data Analyst</h2>
+                        <p style="color: #666; margin-bottom: 20px;">Ask questions in English or Urdu.</p>
                         <div class="query-input-wrapper">
-                            <input type="text" class="query-input" placeholder="Type your query here...">
+                            <input type="text" class="query-input" placeholder="Type your query here... (e.g. Fraud trends last week)">
                             <button class="query-btn">Analyze</button>
                         </div>
-                        <div style="text-align: left; background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 30px;">
+                        <div style="text-align: left; background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 30px; border: 1px solid #eee;">
                             <h4 style="color: var(--primary-blue); margin-bottom: 10px;">Results for: "Show me fraud trends by city"</h4>
                             <div class="chart-wrapper" style="height: 250px;">
                                 <canvas id="fraudBarChart"></canvas>
@@ -301,7 +402,7 @@
                     <div class="panel">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
                             <h3>6-Month Revenue Projection</h3>
-                            <select style="padding: 5px;"><option>All Branches</option><option>Karachi</option></select>
+                            <select style="padding: 8px; border-radius: 4px; border: 1px solid #ddd; outline: none;"><option>All Branches</option><option>Karachi</option></select>
                         </div>
                         <div class="chart-wrapper" style="height: 400px;">
                             <canvas id="prophetChart"></canvas>
@@ -313,16 +414,16 @@
                     <div class="panel" style="max-width: 600px; margin: 0 auto;">
                         <h3>Customer Churn Prediction</h3>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                            <div><label style="font-size: 12px; font-weight: bold;">Credit Score</label><input type="number" value="650" style="width: 100%; padding: 8px; border: 1px solid #ddd;"></div>
-                            <div><label style="font-size: 12px; font-weight: bold;">Balance (PKR)</label><input type="number" value="50000" style="width: 100%; padding: 8px; border: 1px solid #ddd;"></div>
-                            <div><label style="font-size: 12px; font-weight: bold;">Products</label><select style="width: 100%; padding: 8px; border: 1px solid #ddd;"><option>1</option><option>2</option></select></div>
-                            <div><label style="font-size: 12px; font-weight: bold;">Active Member</label><select style="width: 100%; padding: 8px; border: 1px solid #ddd;"><option>Yes</option><option>No</option></select></div>
+                            <div><label style="font-size: 12px; font-weight: bold; color: #555;">Credit Score</label><input type="number" value="650" class="form-control"></div>
+                            <div><label style="font-size: 12px; font-weight: bold; color: #555;">Balance (PKR)</label><input type="number" value="50000" class="form-control"></div>
+                            <div><label style="font-size: 12px; font-weight: bold; color: #555;">Products</label><select class="form-control"><option>1</option><option>2</option></select></div>
+                            <div><label style="font-size: 12px; font-weight: bold; color: #555;">Active Member</label><select class="form-control"><option>Yes</option><option>No</option></select></div>
                         </div>
-                        <button style="width: 100%; padding: 12px; background: var(--primary-blue); color: white; border: none; font-weight: bold; border-radius: 4px;">Calculate Risk</button>
+                        <button style="width: 100%; padding: 12px; background: var(--primary-blue); color: white; border: none; font-weight: bold; border-radius: 6px; cursor: pointer;">Calculate Risk</button>
                         
-                        <div style="margin-top: 20px; padding: 15px; background: #ffebee; border-left: 4px solid #c62828;">
+                        <div style="margin-top: 20px; padding: 15px; background: #ffebee; border-left: 4px solid #c62828; border-radius: 4px;">
                             <div style="font-weight: bold; color: #c62828;">High Churn Risk Detected: 78%</div>
-                            <div style="font-size: 13px; margin-top: 5px;">Reason: Low engagement combined with declining balance.</div>
+                            <div style="font-size: 13px; margin-top: 5px; color: #555;">Reason: Low engagement combined with declining balance.</div>
                         </div>
                     </div>
                 </div>
@@ -334,27 +435,20 @@
     <script>
         // --- 1. LOGIN LOGIC ---
         function performLogin() {
-            // Simulate processing delay
             const btn = document.querySelector('.btn-login');
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Authenticating...';
             
             setTimeout(() => {
-                // Hide Login Screen
                 document.getElementById('login-screen').style.display = 'none';
-                
-                // Show App Container
                 document.getElementById('app-container').style.display = 'flex';
-                
-                // Trigger resize so charts render correctly immediately
                 window.dispatchEvent(new Event('resize'));
-            }, 1500); // 1.5 seconds delay for realism
+            }, 1500); 
         }
 
         function logout() {
-            // Reset to Login Screen
             document.getElementById('app-container').style.display = 'none';
             document.getElementById('login-screen').style.display = 'flex';
-            document.querySelector('.btn-login').innerHTML = 'Login to Dashboard';
+            document.querySelector('.btn-login').innerHTML = 'Login';
         }
 
         // --- 2. NAVIGATION LOGIC ---
@@ -374,22 +468,21 @@
             };
             document.getElementById('page-title').innerText = titles[pageId];
 
-            // Re-render chart fix
             setTimeout(() => {
                 window.dispatchEvent(new Event('resize'));
             }, 100);
         }
 
-        // --- 3. CHART CONFIGURATIONS (FAKE DATA) ---
+        // --- 3. CHART CONFIGURATIONS ---
         Chart.defaults.font.family = "'Segoe UI', sans-serif";
         Chart.defaults.color = '#666';
+        Chart.defaults.scale.grid.color = '#f0f0f0';
         const commonOptions = { 
             responsive: true, 
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom' } }
+            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } }
         };
 
-        // Initialize all charts immediately so they are ready when login happens
         new Chart(document.getElementById('mainForecastChart'), {
             type: 'line',
             data: {
@@ -398,15 +491,17 @@
                     label: 'Actual Revenue',
                     data: [120, 135, 125, 145, 160, 155, null],
                     borderColor: '#002b5e',
-                    backgroundColor: 'rgba(0, 43, 94, 0.1)',
+                    backgroundColor: 'rgba(0, 43, 94, 0.05)',
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    borderWidth: 2
                 }, {
                     label: 'Forecast',
                     data: [null, null, null, null, null, 155, 175],
                     borderColor: '#D4AF37',
                     borderDash: [5, 5],
-                    tension: 0.4
+                    tension: 0.4,
+                    borderWidth: 2
                 }]
             },
             options: commonOptions
@@ -418,10 +513,14 @@
                 labels: ['Karachi Main', 'Lahore Defence', 'Islamabad Blue', 'Multan', 'Others'],
                 datasets: [{
                     data: [40, 25, 15, 10, 10],
-                    backgroundColor: ['#002b5e', '#008080', '#D4AF37', '#2e7d32', '#e0e0e0']
+                    backgroundColor: ['#002b5e', '#008080', '#D4AF37', '#2e7d32', '#cfd8dc'],
+                    borderWidth: 0
                 }]
             },
-            options: commonOptions
+            options: {
+                ...commonOptions,
+                cutout: '70%'
+            }
         });
 
         new Chart(document.getElementById('fraudBarChart'), {
@@ -432,13 +531,14 @@
                     label: 'High Risk Transactions',
                     data: [45, 32, 18, 12, 9],
                     backgroundColor: ['#002b5e', '#008080', '#D4AF37', '#28a745', '#dc3545'],
-                    borderWidth: 1
+                    borderRadius: 4
                 }]
             },
             options: { 
                 ...commonOptions, 
                 indexAxis: 'x', 
-                plugins: { legend: { display: false } }
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: { display: false } } }
             }
         });
 
@@ -452,7 +552,10 @@
                     borderColor: '#008080',
                     fill: true,
                     backgroundColor: 'rgba(0, 128, 128, 0.1)',
-                    pointRadius: 0
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#008080',
+                    borderWidth: 2
                 }]
             },
             options: {
@@ -470,10 +573,11 @@
                 labels: ['Identity Theft', 'Card Cloning', 'Phishing', 'Sim Swap'],
                 datasets: [{
                     data: [150, 80, 45, 30],
-                    backgroundColor: ['#dc3545', '#ef6c00', '#D4AF37', '#002b5e']
+                    backgroundColor: ['#dc3545', '#ef6c00', '#D4AF37', '#002b5e'],
+                    borderWidth: 0
                 }]
             },
-            options: commonOptions
+            options: { ...commonOptions, cutout: '70%' }
         });
 
         new Chart(document.getElementById('prophetChart'), {
@@ -484,9 +588,10 @@
                     label: 'Predicted Revenue (PKR Millions)',
                     data: [4.2, 4.5, 4.3, 4.8, 5.0, 5.2, 5.5, 5.4, 5.8, 6.0, 6.5, 6.8],
                     borderColor: '#002b5e',
-                    backgroundColor: 'rgba(212, 175, 55, 0.2)',
+                    backgroundColor: 'rgba(212, 175, 55, 0.1)',
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    borderWidth: 2
                 }]
             },
             options: commonOptions
